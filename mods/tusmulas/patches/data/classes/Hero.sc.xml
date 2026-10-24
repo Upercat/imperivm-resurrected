@@ -1,6 +1,8 @@
 <patch>
-  <!-- The method that runs the "tusmulas" order. Every hero class inherits it -->
+  <!-- The two orders and the behavior that does the work. Every hero class inherits them -->
   <add select="/class">
     <method sig="tusmulas" vs="data/mod/tusmulas.vs"/>
+    <method sig="tusmulas_auto" vs="data/mod/tusmulas_auto.vs"/>
+    <behavior script="data/mod/tusmulas_hero.vs"/>
   </add>
 </patch>

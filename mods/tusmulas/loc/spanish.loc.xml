@@ -3,4 +3,8 @@
   <translationtableentry text="Calls the nearest free food wagons to follow the hero until it carries 2001 food. If that isn't enough, the nearest settlements send 500-food wagons." context="tusmulas" result="Llama a los carros de víveres libres más cercanos para que sigan al héroe hasta llevar 2001 de comida. Si no basta, los poblados más cercanos envían carros de 500."/>
   <translationtableentry text="1 food wagon has been sent." result="Se ha enviado 1 carromato con víveres."/>
   <translationtableentry text="%s1 food wagons have been sent." result="Se han enviado %s1 carromatos con víveres."/>
+  <translationtableentry text="Automatic food wagons" context="tusmulas_auto" result="Víveres automáticos"/>
+  <translationtableentry text="Turns automatic mode on or off for this hero: when the wagons following it carry less than 1000 food, it gathers wagons again on its own (at most every 30 seconds)." context="tusmulas_auto" result="Activa o desactiva el modo automático en este héroe: cuando los carros que lo siguen llevan menos de 1000 de comida, vuelve a reunir carros él solo (como mucho cada 30 segundos)."/>
+  <translationtableentry text="Automatic food: on" result="Víveres automáticos: sí"/>
+  <translationtableentry text="Automatic food: off" result="Víveres automáticos: no"/>
 </translationtable>
