@@ -43,6 +43,7 @@ const int kIdControls = 0x111B;
 const int kIdLanguage = 0x111C;
 const int kIdMonitor = 0x111D;
 const int kIdUpdate = 0x111E;
+const int kIdWagonIcons = 0x111F;
 std::vector<std::string> g_langCodes;
 const int kGameDefaults[13] = {0, 0, 0, 1, 1, 1, 1, 1, 14, 50, 50, 50, 50};
 int g_brightOriginal = 100;
@@ -194,6 +195,7 @@ void __fastcall HookPopulateControls(void *dlg)
 	SetCheck(dlg, kIdNet, c.showNet);
 	SetCheck(dlg, kIdAutosave, c.autosave);
 	SetCheck(dlg, kIdAlerts, c.onlineAlerts);
+	SetCheck(dlg, kIdWagonIcons, c.wagonIcons);
 	SetCheck(dlg, kIdSaveOnExit, c.autosaveOnExit);
 	SetCheck(dlg, kIdLargeAddress, ModsExeIsLargeAddressAware());
 	FillCombo(dlg, kIdAutosaveCombo, Items(kAutosaveLabels), NearestIndex(kAutosaveMinutes, c.autosaveMinutes));
@@ -244,6 +246,7 @@ void ApplyModOptions(void *dlg)
 	c.showNet = GetCheck(dlg, kIdNet, c.showNet);
 	c.autosave = GetCheck(dlg, kIdAutosave, c.autosave);
 	c.onlineAlerts = GetCheck(dlg, kIdAlerts, c.onlineAlerts);
+	c.wagonIcons = GetCheck(dlg, kIdWagonIcons, c.wagonIcons);
 	c.autosaveOnExit = GetCheck(dlg, kIdSaveOnExit, c.autosaveOnExit);
 	int sel = GetComboIndex(dlg, kIdAutosaveCombo);
 	if (sel >= 0 && sel < static_cast<int>(sizeof(kAutosaveMinutes) / sizeof(kAutosaveMinutes[0]))) {
