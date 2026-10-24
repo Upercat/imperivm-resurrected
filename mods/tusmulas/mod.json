@@ -1,0 +1,17 @@
+{
+  "id": "tusmulas",
+  "name": {
+    "spanish": "TusMulas",
+    "english": "TusMulas",
+    "italian": "TusMulas"
+  },
+  "version": "1.0",
+  "category": "Gameplay & Balance",
+  "authors": ["Joselu"],
+  "description": {
+    "spanish": "Nueva orden para los héroes (tecla I): el héroe reúne carros de víveres hasta llevar 2001 de comida. Primero llama a los carros libres más cercanos, en anillos de 400 hasta 1600; si no basta, sus poblados más cercanos le envían carros de 500. Cambia la jugabilidad: en multijugador todos tienen que llevarlo.",
+    "english": "New hero command (key I): the hero gathers food wagons until it carries 2001 food. It first calls the nearest free wagons, in rings of 400 up to 1600; if that isn't enough, its nearest settlements send it 500-food wagons. Changes gameplay: everyone must have it in multiplayer.",
+    "italian": "Nuovo ordine per gli eroi (tasto I): l'eroe raduna carri di viveri fino a portare 2001 di cibo. Prima chiama i carri liberi più vicini, ad anelli di 400 fino a 1600; se non basta, i suoi insediamenti più vicini gli mandano carri da 500. Cambia il gioco: in multigiocatore devono averlo tutti."
+  },
+  "redistributable": true
+}

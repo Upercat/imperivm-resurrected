@@ -1,0 +1,6 @@
+<translationtable>
+  <translationtableentry text="Gather food wagons" context="tusmulas" result="Reunir carros de víveres"/>
+  <translationtableentry text="Calls the nearest free food wagons to follow the hero until it carries 2001 food. If that isn't enough, the nearest settlements send 500-food wagons." context="tusmulas" result="Llama a los carros de víveres libres más cercanos para que sigan al héroe hasta llevar 2001 de comida. Si no basta, los poblados más cercanos envían carros de 500."/>
+  <translationtableentry text="1 food wagon has been sent." result="Se ha enviado 1 carromato con víveres."/>
+  <translationtableentry text="%s1 food wagons have been sent." result="Se han enviado %s1 carromatos con víveres."/>
+</translationtable>

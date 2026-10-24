@@ -1,0 +1,18 @@
+<commands>
+
+<!-- An immediate order for every hero. Its name is the sig of the method in patches\data\classes\Hero.sc.xml.
+     "i" is the only key no Hero, Military or Unit order uses; the player can change it in Controls -> Content -->
+<cmd name="tusmulas" priority="10"
+	offset="1"
+	button="Actions/Mass Healing.bmp"
+	key="i"
+	rollover="Gather food wagons"
+	description="Calls the nearest free food wagons to follow the hero until it carries 2001 food. If that isn't enough, the nearest settlements send 500-food wagons."
+	groupverifier=""
+	groupdispatch=""
+	voidgroupdispatch="1"
+	>
+	<src obj="Hero"/>
+</cmd>
+
+</commands>
