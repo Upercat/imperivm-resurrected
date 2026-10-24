@@ -56,7 +56,7 @@ const EVENTS = {
 	OnAttackResolved: ['void', 'Obj', 'Obj', 'int'],
 };
 const MOD_FUNCTIONS = ['Mod_Log', 'Mod_LogInt', 'Mod_IsActive', 'Mod_ApiVersion', 'Mod_SetInt', 'Mod_GetInt', 'Mod_AddInt', 'Mod_HasKey',
-	'Mod_AttackDamage', 'Mod_SetAttackDamage', 'Mod_HasSpecial', 'Mod_SetSpecial', 'Mod_TrueRace', 'Mod_GetOption', 'Mod_GetOptionValue', 'Mod_PlayerCiv', 'Mod_CanExecCmd'];
+	'Mod_AttackDamage', 'Mod_SetAttackDamage', 'Mod_HasSpecial', 'Mod_SetSpecial', 'Mod_TrueRace', 'Mod_GetOption', 'Mod_GetOptionValue', 'Mod_PlayerCiv', 'Mod_CanExecCmd', 'Mod_IsAIPlayer'];
 const ID_RE = /^[A-Za-z][A-Za-z0-9_]{0,23}$/;
 
 // --- report -----------------------------------------------------------------------------------------------------------

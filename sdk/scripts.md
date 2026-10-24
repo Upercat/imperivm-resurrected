@@ -71,7 +71,7 @@ There's no event for this (objects are created in dozens of places, including wh
 
 ## `Mod_` functions
 
-The current API version is 7. `Mod_ApiVersion()` returns it, and a mod can require a minimum.
+The current API version is 8. `Mod_ApiVersion()` returns it, and a mod can require a minimum.
 
 | Function | What it does |
 |---|---|
@@ -92,6 +92,7 @@ The current API version is 7. `Mod_ApiVersion()` returns it, and a mod can requi
 | `Mod_GetOptionValue(str id)` : `int` | The chosen value of option `id`: 0 or 1 for a switch, and the number of the chosen entry (from 0) for a list (API 6). |
 | `Mod_PlayerCiv(int player)` : `int` | The civilization the player chose in the lobby (10 or higher if it's from a mod), even if it's a variant and `GetPlayerRace` returns its base. -1 if there's no such player (API 7). See [Civilizations](civilizations.md). |
 | `Mod_CanExecCmd(Obj objeto, str orden)` : `bool` | Could the player press that command's button on that object now? It's the game's own check: the object has it, it isn't disabled (`CmdDisable`) and its verifier (`groupverifier` or the player one) accepts it. It doesn't look at the cost (API 7). |
+| `Mod_IsAIPlayer(int player)` : `bool` | Does the AI play that player (1 to 16)? `false` for a human and for an empty slot. A human who leaves an online game and is replaced by the AI counts as AI from then on. To tell a human from an empty slot, look at what they own (`GetPlayerUnits`, `Strongholds`) (API 8). |
 
 New functions are added at the end and existing ones don't change. If your mod uses one, it needs a version of Imperivm Resurrected that has it. The API version is part of the multiplayer check when there are gameplay mods: everyone must have the same one.
 

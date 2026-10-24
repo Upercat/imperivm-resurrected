@@ -10,7 +10,7 @@
 
 #include "mods/patchxml.h"
 
-inline constexpr int kScriptApiVersion = 7;
+inline constexpr int kScriptApiVersion = 8;
 
 struct ModDependency {
 	std::string id;
