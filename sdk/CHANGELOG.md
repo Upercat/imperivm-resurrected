@@ -1,6 +1,10 @@
 # Changes
 
-The SDK version and which mods you can make with each one. The script API version (`Mod_ApiVersion()`) is separate: it's currently 7.
+The SDK version and which mods you can make with each one. The script API version (`Mod_ApiVersion()`) is separate: it's currently 8.
+
+## Unreleased
+
+- `Mod_IsAIPlayer(player)` (script API 8): whether the AI plays a player, so a mod can leave the humans alone. See [Scripts](scripts.md#mod_-functions).
 
 ## 1.0
 

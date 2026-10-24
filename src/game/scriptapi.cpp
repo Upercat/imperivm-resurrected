@@ -21,6 +21,7 @@
 #include <vector>
 #include <atomic>
 #include "addr/script.h"
+#include "addr/state.h"
 
 namespace {
 const unsigned kFirstModId = 0x741;
@@ -268,6 +269,17 @@ int __cdecl Mod_PlayerCiv(int *pSP)
 	return 0;
 }
 
+int __cdecl Mod_IsAIPlayer(int *pSP)
+{
+	const int player = PopInt(pSP);
+	char *game = *reinterpret_cast<char **>(addr::kGame);
+	bool ai = false;
+	// Player n of the scripts is entry n - 1 of the game's 16 players (800 bytes each); +0x88 is its AI, null for a human or an empty slot
+	if (game && player >= 1 && player <= 16) ai = *reinterpret_cast<void **>(game + 0x12cc + (player - 1) * 800 + 0x88) != nullptr;
+	PushBool(pSP, ai);
+	return 0;
+}
+
 int __cdecl Mod_ApiVersion(int *pSP)
 {
 	PushInt(pSP, kScriptApiVersion);
@@ -298,6 +310,7 @@ const Native kNatives[] = {
 	{Mod_PlayerCiv, "Mod_PlayerCiv", "int, int player"},
 	{Mod_CanExecCmd, "Mod_CanExecCmd", "bool, Obj obj, str command"},
 	{Mod_OffersCmd, "Mod_OffersCmd", "bool, Obj obj, str command"},
+	{Mod_IsAIPlayer, "Mod_IsAIPlayer", "bool, int player"},
 };
 
 int __cdecl RegisterModNatives(void *engine)

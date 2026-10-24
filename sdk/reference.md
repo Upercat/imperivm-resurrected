@@ -213,7 +213,7 @@ Guide: [Scripts](scripts.md#events). File: `events\<Event>.vs`. Runs on every PC
 
 ## 8. `Mod_*` functions
 
-Guide: [Scripts](scripts.md#mod_-functions). The current API is 6; it's part of the multiplayer check.
+Guide: [Scripts](scripts.md#mod_-functions). The current API is 8; it's part of the multiplayer check.
 
 | Function | API |
 |---|---|
