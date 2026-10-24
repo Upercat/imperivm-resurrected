@@ -921,6 +921,7 @@ extern const TrRow kTrRows[] = {
 	{"Network statistics", "Estadísticas de red", "Statistiche di rete"},
 	{"Mute in the background", "Silenciar en segundo plano", "Disattiva l'audio in secondo piano"},
 	{"Chat and invitation alerts", "Avisos de chat e invitaciones", "Avvisi di chat e inviti"},
+	{"Gold and food icons on wagons", "Iconos de oro y comida en los carros", "Icone di oro e cibo sui carri"},
 	{"Cutscenes", "Cinemáticas", "Filmati"},
 	{"Use up to 4 GB of memory", "Usar hasta 4 GB de memoria", "Usa fino a 4 GB di memoria"},
 	{"Brightness", "Brillo", "Luminosità"},

@@ -30,6 +30,7 @@
 #include "app/overlay.h"
 #include "game/cheats.h"
 #include "game/mapfog.h"
+#include "game/wagonicons.h"
 #include "app/render.h"
 #include "hooks/tweaks.h"
 
@@ -200,6 +201,12 @@ template <class T> void SafeRelease(T *&p)
 	}
 }
 
+void DecorateGameFrame(uint32_t *buf, int w, int h)
+{
+	WagonIconsDraw(buf, w, h);
+	ControlsDrawBarKeys(buf, w, h);
+}
+
 DWORD WINAPI RenderThread(LPVOID)
 {
 	ID3D11Device *dev = nullptr;
@@ -311,7 +318,7 @@ DWORD WINAPI RenderThread(LPVOID)
 					newFrame = true;
 				}
 			}
-			if (newFrame) ControlsDrawBarKeys(local.data(), fw, fh);
+			if (newFrame) DecorateGameFrame(local.data(), fw, fh);
 			else if (ControlsBarKeysChanged()) {
 				{
 					std::lock_guard<std::mutex> lock(g_frameLock);
@@ -322,7 +329,7 @@ DWORD WINAPI RenderThread(LPVOID)
 						newFrame = true;
 					}
 				}
-				if (newFrame) ControlsDrawBarKeys(local.data(), fw, fh);
+				if (newFrame) DecorateGameFrame(local.data(), fw, fh);
 			}
 		}
 		wasVideo = video;
@@ -366,7 +373,7 @@ DWORD WINAPI RenderThread(LPVOID)
 					fh = g_frameH;
 					local = g_frame;
 				}
-				ControlsDrawBarKeys(local.data(), fw, fh);
+				DecorateGameFrame(local.data(), fw, fh);
 			}
 			Guard("interface drawing", [&] {
 				MpUiDraw(local.data(), fw, fh);
@@ -386,7 +393,7 @@ DWORD WINAPI RenderThread(LPVOID)
 					std::lock_guard<std::mutex> lock(g_frameLock);
 					local = g_frame;
 				}
-				ControlsDrawBarKeys(local.data(), fw, fh);
+				DecorateGameFrame(local.data(), fw, fh);
 			}
 			DrawPerfOverlay(local.data(), fw, fh, fps, bbW, bbH);
 			newFrame = true;
@@ -397,7 +404,7 @@ DWORD WINAPI RenderThread(LPVOID)
 				local = g_frame;
 			}
 			newFrame = true;
-			ControlsDrawBarKeys(local.data(), fw, fh);
+			DecorateGameFrame(local.data(), fw, fh);
 		}
 		overlayWasOn = overlay;
 		uiWasOn = ui;
@@ -500,6 +507,7 @@ int WINAPI HookSetDIBitsToDevice(HDC hdc, int xDest, int yDest, DWORD w, DWORD h
 	MediaFrameTick();
 	TweaksFrameTick();
 	CheatsFrameTick();
+	WagonIconsFrameTick();
 	MpUiGameThreadTick();
 	RejoinGameThreadTick();
 	SpectatorGameThreadTick();
