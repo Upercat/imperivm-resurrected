@@ -60,6 +60,8 @@ void LoadConfig()
 	g_config.extendedView = GetPrivateProfileIntA("Display", "ExtendedView", 1, path) != 0;
 	g_config.showPerf = GetPrivateProfileIntA("Display", "ShowPerformance", 0, path) != 0;
 	g_config.showNet = GetPrivateProfileIntA("Display", "ShowNetwork", 0, path) != 0;
+	g_config.groupIconsColumn = GetPrivateProfileIntA("Map", "GroupIconsColumn", 1, path) != 0;
+	g_config.groupIconsXpBeside = GetPrivateProfileIntA("Map", "GroupIconsXpBeside", 1, path) != 0;
 	g_config.panelX = (std::max)(0, (std::min)(1000, static_cast<int>(GetPrivateProfileIntA("Display", "PanelX", 1000, path))));
 	g_config.panelY = (std::max)(0, (std::min)(1000, static_cast<int>(GetPrivateProfileIntA("Display", "PanelY", 0, path))));
 	g_config.panelCompact = GetPrivateProfileIntA("Display", "PanelCompact", 0, path) != 0;
@@ -141,6 +143,8 @@ void SaveConfig()
 	WritePrivateProfileStringA("Game", "SmoothScroll", g_config.smoothScroll ? "1" : "0", path);
 	WritePrivateProfileStringA("Display", "ShowPerformance", g_config.showPerf ? "1" : "0", path);
 	WritePrivateProfileStringA("Display", "ShowNetwork", g_config.showNet ? "1" : "0", path);
+	WritePrivateProfileStringA("Map", "GroupIconsColumn", g_config.groupIconsColumn ? "1" : "0", path);
+	WritePrivateProfileStringA("Map", "GroupIconsXpBeside", g_config.groupIconsXpBeside ? "1" : "0", path);
 	WritePrivateProfileStringA("Display", "PanelX", std::to_string(g_config.panelX).c_str(), path);
 	WritePrivateProfileStringA("Display", "PanelY", std::to_string(g_config.panelY).c_str(), path);
 	WritePrivateProfileStringA("Display", "PanelCompact", g_config.panelCompact ? "1" : "0", path);

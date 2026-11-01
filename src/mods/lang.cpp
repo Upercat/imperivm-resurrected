@@ -530,7 +530,8 @@ std::multimap<std::string, std::string> FullKeysByText(const std::string &base)
 }
 
 const char *const kMenuKeys[] = {"Apply", "Reset", "Controls", "Play in window", "Vertical sync",
-	"Trap the mouse in the game", "Show FPS and memory", "Network statistics", "Mute in the background",
+	"Trap the mouse in the game", "Show FPS and memory", "Network statistics", "Group icons in one column",
+	"Hero experience beside the icon", "Mute in the background",
 	"Chat and invitation alerts", "Cutscenes", "Use up to 4 GB of memory", "Brightness", "Autosave",
 	"Save when leaving the game", "Language", "Updates", "Monitor", "Multiplayer", "Imperivm League", "Additional content"};
 

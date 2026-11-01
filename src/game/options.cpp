@@ -43,6 +43,8 @@ const int kIdControls = 0x111B;
 const int kIdLanguage = 0x111C;
 const int kIdMonitor = 0x111D;
 const int kIdUpdate = 0x111E;
+const int kIdGroupColumn = 0x111F;
+const int kIdGroupXpBeside = 0x1120;
 std::vector<std::string> g_langCodes;
 const int kGameDefaults[13] = {0, 0, 0, 1, 1, 1, 1, 1, 14, 50, 50, 50, 50};
 int g_brightOriginal = 100;
@@ -192,6 +194,8 @@ void __fastcall HookPopulateControls(void *dlg)
 	SetCheck(dlg, kIdMute, c.muteInBackground);
 	SetCheck(dlg, kIdPerf, c.showPerf);
 	SetCheck(dlg, kIdNet, c.showNet);
+	SetCheck(dlg, kIdGroupColumn, c.groupIconsColumn);
+	SetCheck(dlg, kIdGroupXpBeside, c.groupIconsXpBeside);
 	SetCheck(dlg, kIdAutosave, c.autosave);
 	SetCheck(dlg, kIdAlerts, c.onlineAlerts);
 	SetCheck(dlg, kIdSaveOnExit, c.autosaveOnExit);
@@ -242,6 +246,8 @@ void ApplyModOptions(void *dlg)
 	c.muteInBackground = GetCheck(dlg, kIdMute, c.muteInBackground);
 	c.showPerf = GetCheck(dlg, kIdPerf, c.showPerf);
 	c.showNet = GetCheck(dlg, kIdNet, c.showNet);
+	c.groupIconsColumn = GetCheck(dlg, kIdGroupColumn, c.groupIconsColumn);
+	c.groupIconsXpBeside = GetCheck(dlg, kIdGroupXpBeside, c.groupIconsXpBeside);
 	c.autosave = GetCheck(dlg, kIdAutosave, c.autosave);
 	c.onlineAlerts = GetCheck(dlg, kIdAlerts, c.onlineAlerts);
 	c.autosaveOnExit = GetCheck(dlg, kIdSaveOnExit, c.autosaveOnExit);

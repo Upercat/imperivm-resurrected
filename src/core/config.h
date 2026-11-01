@@ -25,6 +25,8 @@ struct Config {
 	bool extendedView = true;
 	bool showPerf = false;
 	bool showNet = false;
+	bool groupIconsColumn = true;
+	bool groupIconsXpBeside = true;
 	int panelX = 1000;
 	int panelY = 0;
 	bool panelCompact = false;

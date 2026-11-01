@@ -16,6 +16,7 @@
 #include "addr/script.h"
 #include "addr/state.h"
 #include "addr/world.h"
+#include "core/config.h"
 #include "core/log.h"
 #include "game/quickicons.h"
 
@@ -69,6 +70,8 @@ T &At(void *p, unsigned off) { return *reinterpret_cast<T *>(static_cast<char *>
 void *Bar() { return *reinterpret_cast<void **>(addr::kQuickIconBarGlobal); }
 
 const unsigned kHeroFlag = 0x1000000, kOffFlags = 0x2c, kOffExperience = 0x180, kOffLevel = 0x184;
+const DWORD kBlinkMs = 450;
+
 // XPview layout: a 4 px experience bar right after the portrait, as tall as the icon, and the level with
 // one '+' per unspent skill point 8 px past the bar. Colors are the game's RGB555.
 const int kXpBarWidth = 4, kLevelGap = 8, kLevelTop = 4, kLevelScale = 3, kMaxPlusSigns = 10;
@@ -176,17 +179,27 @@ void DrawOutlined(void *surface, int x, int y, const char *text, int scale, unsi
 	DrawGlyphs(surface, x, y, text, scale, color);
 }
 
-void DecorateIcon(void *icon, void *surface)
+void DecorateClassic(void *surface, char *hero, int x, int y)
 {
-	const int x = At<short>(icon, kOffPosX), y = At<short>(icon, kOffPosY);
-	char text[32];
-	const int count = At<int>(icon, kOffCount);
-	if (count >= 0) {
-		_snprintf_s(text, sizeof(text), _TRUNCATE, "%d", std::min(count, 999));
-		DrawOutlined(surface, x + 4, y + 0x2a, text, 2, 0x7fff);
+	char text[16];
+	const int experience = At<int>(hero, kOffExperience);
+	int level = At<int>(hero, kOffLevel), lower = 0, upper = 0, spanLevel = 0;
+	if (LevelSpanOf(experience, spanLevel, lower, upper)) {
+		const int top = 0x12, bottom = 0x33, height = bottom - top + 1;
+		const int filled = static_cast<int>(static_cast<long long>(experience - lower) * height / (upper - lower));
+		Block(surface, x + 0x2e, y + top, x + 0x30, y + bottom, 0x0842);
+		if (filled > 0) Block(surface, x + 0x2e, y + bottom - std::min(height, filled) + 1, x + 0x30, y + bottom, 0x02bf);
 	}
-	char *hero = HeroOf(icon);
-	if (!hero) return;
+	const int points = reinterpret_cast<SkillPoints_t>(addr::kHeroAvailableSkillPoints)(hero);
+	const bool blinkOn = points > 0 && ((GetTickCount() / kBlinkMs) & 1) == 0;
+	const unsigned color = points > 0 ? (blinkOn ? 0x6284u : 0x7fffu) : 0x7fffu;
+	_snprintf_s(text, sizeof(text), _TRUNCATE, points > 0 ? "%d+" : "%d", std::max(0, std::min(999, level)));
+	DrawOutlined(surface, x + 4, y + 3, text, level >= 100 ? 1 : 2, color);
+}
+
+void DecorateBeside(void *icon, void *surface, char *hero, int x, int y)
+{
+	char text[32];
 	const int width = At<int>(icon, kOffRight) - At<int>(icon, kOffLeft) + 1;
 	const int height = At<int>(icon, kOffBottom) - At<int>(icon, kOffTop) + 1;
 	if (width <= 0 || height <= 0) return;
@@ -206,6 +219,21 @@ void DecorateIcon(void *icon, void *surface)
 		text[digits + p + 1] = 0;
 	}
 	DrawGlyphs(surface, barRight + 1 + kLevelGap, y + kLevelTop, text, kLevelScale, kLevelColor);
+}
+
+void DecorateIcon(void *icon, void *surface)
+{
+	const int x = At<short>(icon, kOffPosX), y = At<short>(icon, kOffPosY);
+	char text[16];
+	const int count = At<int>(icon, kOffCount);
+	if (count >= 0) {
+		_snprintf_s(text, sizeof(text), _TRUNCATE, "%d", std::min(count, 999));
+		DrawOutlined(surface, x + 4, y + 0x2a, text, 2, 0x7fff);
+	}
+	char *hero = HeroOf(icon);
+	if (!hero) return;
+	if (GetConfig().groupIconsXpBeside) DecorateBeside(icon, surface, hero, x, y);
+	else DecorateClassic(surface, hero, x, y);
 }
 
 void __fastcall HookRenderIcon(void *self)
@@ -289,8 +317,8 @@ void __fastcall HookRefresh(void *self, void *edx, int mode)
 	At<int>(self, kOffDirty) = 0;
 }
 
-// The extras continue the game's own column below group 5, so the bar reads 1 to 9 and 0 top to bottom.
-// The geometry comes from the real icons; the fixed second column is only a fallback.
+// With GroupIconsColumn the extras continue the game's own column below group 5, so the bar reads 1 to 9 and 0
+// top to bottom. The geometry comes from the real icons; the fixed second column is the other layout and the fallback.
 bool ColumnBelowRealIcons(int row, int &left, int &top)
 {
 	void *bar = Bar();
@@ -308,7 +336,7 @@ bool ColumnBelowRealIcons(int row, int &left, int &top)
 void PlaceExtra(void *icon, int row)
 {
 	int left = kColumnLeft, top = row * 0x44 + 8;
-	if (!ColumnBelowRealIcons(row, left, top)) LogW("game", "group icons: real icons not placed yet, extra %d goes to the second column", row);
+	if (GetConfig().groupIconsColumn && !ColumnBelowRealIcons(row, left, top)) LogW("game", "group icons: real icons not placed yet, extra %d goes to the second column", row);
 	const int right = left + 0x33, bottom = top + 0x3b;
 	At<int>(icon, kOffLeft) = left;
 	At<int>(icon, kOffRight) = right;
@@ -428,7 +456,8 @@ void *IconAt(int slot)
 
 bool g_wasDecorated[kRealCount + kExtraCount] = {};
 
-// The bar and the level are drawn to the right of the icon, outside its own rect, so that area is invalidated too.
+// With GroupIconsXpBeside the bar and the level are drawn to the right of the icon, outside its own rect, so that area
+// is invalidated too. It is done in both styles so switching from Options leaves nothing behind.
 void InvalidateWithDecoration(void *icon)
 {
 	int rect[4];

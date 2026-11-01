@@ -919,6 +919,8 @@ extern const TrRow kTrRows[] = {
 	{"Trap the mouse in the game", "Atrapar el ratón en el juego", "Blocca il mouse nel gioco"},
 	{"Show FPS and memory", "Mostrar FPS y memoria", "Mostra FPS e memoria"},
 	{"Network statistics", "Estadísticas de red", "Statistiche di rete"},
+	{"Group icons in one column", "Iconos de grupo en una columna", "Icone dei gruppi in una colonna"},
+	{"Hero experience beside the icon", "Experiencia del héroe junto al icono", "Esperienza dell'eroe accanto all'icona"},
 	{"Mute in the background", "Silenciar en segundo plano", "Disattiva l'audio in secondo piano"},
 	{"Chat and invitation alerts", "Avisos de chat e invitaciones", "Avvisi di chat e inviti"},
 	{"Cutscenes", "Cinemáticas", "Filmati"},
