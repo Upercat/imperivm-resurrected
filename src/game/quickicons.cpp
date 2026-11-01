@@ -69,7 +69,11 @@ T &At(void *p, unsigned off) { return *reinterpret_cast<T *>(static_cast<char *>
 void *Bar() { return *reinterpret_cast<void **>(addr::kQuickIconBarGlobal); }
 
 const unsigned kHeroFlag = 0x1000000, kOffFlags = 0x2c, kOffExperience = 0x180, kOffLevel = 0x184;
-const DWORD kBlinkMs = 450;
+// XPview layout: a 4 px experience bar right after the portrait, as tall as the icon, and the level with
+// one '+' per unspent skill point 8 px past the bar. Colors are the game's RGB555.
+const int kXpBarWidth = 4, kLevelGap = 8, kLevelTop = 4, kLevelScale = 3, kMaxPlusSigns = 10;
+const int kDecorationWidth = kXpBarWidth + kLevelGap + (3 + kMaxPlusSigns) * 4 * kLevelScale;
+const unsigned kXpBarBackground = 0x18c8, kXpBarFill = 0x7f95, kLevelColor = 0x7faf;
 
 const unsigned char kGlyphs[11][5] = {
 	{7, 5, 5, 5, 7}, {2, 6, 2, 2, 7}, {7, 1, 7, 4, 7}, {7, 1, 7, 1, 7}, {5, 5, 7, 1, 1},
@@ -175,7 +179,7 @@ void DrawOutlined(void *surface, int x, int y, const char *text, int scale, unsi
 void DecorateIcon(void *icon, void *surface)
 {
 	const int x = At<short>(icon, kOffPosX), y = At<short>(icon, kOffPosY);
-	char text[16];
+	char text[32];
 	const int count = At<int>(icon, kOffCount);
 	if (count >= 0) {
 		_snprintf_s(text, sizeof(text), _TRUNCATE, "%d", std::min(count, 999));
@@ -183,19 +187,25 @@ void DecorateIcon(void *icon, void *surface)
 	}
 	char *hero = HeroOf(icon);
 	if (!hero) return;
+	const int width = At<int>(icon, kOffRight) - At<int>(icon, kOffLeft) + 1;
+	const int height = At<int>(icon, kOffBottom) - At<int>(icon, kOffTop) + 1;
+	if (width <= 0 || height <= 0) return;
+	const int barLeft = x + width, barRight = barLeft + kXpBarWidth - 1, bottom = y + height - 1;
+	Block(surface, barLeft, y, barRight, bottom, kXpBarBackground);
 	const int experience = At<int>(hero, kOffExperience);
-	int level = At<int>(hero, kOffLevel), lower = 0, upper = 0, spanLevel = 0;
+	int lower = 0, upper = 0, spanLevel = 0;
 	if (LevelSpanOf(experience, spanLevel, lower, upper)) {
-		const int top = 0x12, bottom = 0x33, height = bottom - top + 1;
-		const int filled = static_cast<int>(static_cast<long long>(experience - lower) * height / (upper - lower));
-		Block(surface, x + 0x2e, y + top, x + 0x30, y + bottom, 0x0842);
-		if (filled > 0) Block(surface, x + 0x2e, y + bottom - std::min(height, filled) + 1, x + 0x30, y + bottom, 0x02bf);
+		const int filled = std::min(height, static_cast<int>(static_cast<long long>(experience - lower) * height / (upper - lower)));
+		if (filled > 0) Block(surface, barLeft, bottom - filled + 1, barRight, bottom, kXpBarFill);
 	}
-	const int points = reinterpret_cast<SkillPoints_t>(addr::kHeroAvailableSkillPoints)(hero);
-	const bool blinkOn = points > 0 && ((GetTickCount() / kBlinkMs) & 1) == 0;
-	const unsigned color = points > 0 ? (blinkOn ? 0x6284u : 0x7fffu) : 0x7fffu;
-	_snprintf_s(text, sizeof(text), _TRUNCATE, points > 0 ? "%d+" : "%d", std::max(0, std::min(999, level)));
-	DrawOutlined(surface, x + 4, y + 3, text, level >= 100 ? 1 : 2, color);
+	const int level = std::max(0, std::min(999, At<int>(hero, kOffLevel)));
+	const int points = std::max(0, std::min(kMaxPlusSigns, reinterpret_cast<SkillPoints_t>(addr::kHeroAvailableSkillPoints)(hero)));
+	const int digits = _snprintf_s(text, sizeof(text), _TRUNCATE, "%d", level);
+	for (int p = 0; p < points && digits + p < static_cast<int>(sizeof(text)) - 1; p++) {
+		text[digits + p] = '+';
+		text[digits + p + 1] = 0;
+	}
+	DrawGlyphs(surface, barRight + 1 + kLevelGap, y + kLevelTop, text, kLevelScale, kLevelColor);
 }
 
 void __fastcall HookRenderIcon(void *self)
@@ -416,6 +426,17 @@ void *IconAt(int slot)
 	return g_extra[slot - kRealCount];
 }
 
+bool g_wasDecorated[kRealCount + kExtraCount] = {};
+
+// The bar and the level are drawn to the right of the icon, outside its own rect, so that area is invalidated too.
+void InvalidateWithDecoration(void *icon)
+{
+	int rect[4];
+	memcpy(rect, static_cast<char *>(icon) + kOffInvalid, sizeof(rect));
+	rect[2] += kDecorationWidth;
+	reinterpret_cast<Invalidate_t>(addr::kVisibleMgrInvalidateRect)(*reinterpret_cast<void **>(addr::kVisibleMgr), nullptr, rect);
+}
+
 bool Inside(void *icon, int x, int y)
 {
 	return At<int>(icon, kOffShown) != 0 && x >= At<int>(icon, kOffLeft) && x <= At<int>(icon, kOffRight) && y >= At<int>(icon, kOffTop) && y <= At<int>(icon, kOffBottom);
@@ -432,9 +453,10 @@ void QuickIconsGameThreadTick()
 		RefreshExtras(0);
 		for (int slot = 0; slot < kRealCount + kExtraCount; slot++) {
 			void *icon = IconAt(slot);
-			if (icon && At<int>(icon, kOffShown) != 0 && HeroOf(icon)) {
-				reinterpret_cast<Invalidate_t>(addr::kVisibleMgrInvalidateRect)(*reinterpret_cast<void **>(addr::kVisibleMgr), nullptr, reinterpret_cast<int *>(static_cast<char *>(icon) + kOffInvalid));
-			}
+			if (!icon) continue;
+			const bool decorated = At<int>(icon, kOffShown) != 0 && HeroOf(icon);
+			if (decorated || g_wasDecorated[slot]) InvalidateWithDecoration(icon);
+			g_wasDecorated[slot] = decorated;
 		}
 	}
 	__except (EXCEPTION_EXECUTE_HANDLER) {
