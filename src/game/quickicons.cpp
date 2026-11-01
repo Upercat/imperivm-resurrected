@@ -279,9 +279,27 @@ void __fastcall HookRefresh(void *self, void *edx, int mode)
 	At<int>(self, kOffDirty) = 0;
 }
 
+// The extras continue the game's own column below group 5, so the bar reads 1 to 9 and 0 top to bottom.
+// The geometry comes from the real icons; the fixed second column is only a fallback.
+bool ColumnBelowRealIcons(int row, int &left, int &top)
+{
+	void *bar = Bar();
+	void *first = bar ? At<void *>(bar, 4) : nullptr;
+	void *second = bar ? At<void *>(bar, 8) : nullptr;
+	void *last = bar ? At<void *>(bar, 4 + (kRealCount - 1) * 4) : nullptr;
+	if (!first || !second || !last) return false;
+	const int pitch = At<int>(second, kOffTop) - At<int>(first, kOffTop);
+	if (pitch <= 0 || At<int>(last, kOffRight) - At<int>(last, kOffLeft) <= 0) return false;
+	left = At<int>(last, kOffLeft);
+	top = At<int>(last, kOffTop) + (row + 1) * pitch;
+	return true;
+}
+
 void PlaceExtra(void *icon, int row)
 {
-	const int left = kColumnLeft, right = left + 0x33, top = row * 0x44 + 8, bottom = top + 0x3b;
+	int left = kColumnLeft, top = row * 0x44 + 8;
+	if (!ColumnBelowRealIcons(row, left, top)) LogW("game", "group icons: real icons not placed yet, extra %d goes to the second column", row);
+	const int right = left + 0x33, bottom = top + 0x3b;
 	At<int>(icon, kOffLeft) = left;
 	At<int>(icon, kOffRight) = right;
 	At<int>(icon, kOffTop) = top;
